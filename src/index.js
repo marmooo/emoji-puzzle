@@ -258,6 +258,26 @@ function removeSvgTagAttributes(svg) {
   }
 }
 
+function computeAttribute(node, attributeName) {
+  let attributeValue;
+  while (!attributeValue && node && node.tagName) {
+    attributeValue = node.getAttribute(attributeName);
+    node = node.parentNode;
+  }
+  return attributeValue;
+}
+
+function resetCurrentColor(node) {
+  const fill = computeAttribute(node, "fill");
+  const stroke = computeAttribute(node, "stroke");
+  if (fill && fill.toLowerCase() == "currentcolor") {
+    node.setAttribute("fill", "gray");
+  }
+  if (stroke && stroke.toLowerCase() == "currentcolor") {
+    node.setAttribute("stroke", "gray");
+  }
+}
+
 function styleAttributeToAttributes(svg) {
   [...svg.querySelectorAll("[style]")].forEach((node) => {
     node.getAttribute("style").split(";").forEach((style) => {
@@ -339,11 +359,17 @@ async function nextProblem() {
   const url = `/svg/${course}/${filePath}`;
   const icon = await fetchIcon(url);
   svg = icon.documentElement;
+  styleAttributeToAttributes(svg);
+
   const tehon = svg.cloneNode(true);
+  if (!tehon.getAttribute("fill")) tehon.setAttribute("fill", "currentColor");
   tehon.style.width = "100%";
   tehon.style.height = "100%";
 
-  styleAttributeToAttributes(svg);
+  if (!svg.getAttribute("fill")) svg.setAttribute("fill", "gray");
+  svg.style.width = "100%";
+  svg.style.height = "100%";
+  resetCurrentColor(svg);
   removeSvgTagAttributes(svg);
   shape2path(svg, createPath, { circleAlgorithm: "QuadBezier" });
   removeUseTags(svg);
@@ -356,8 +382,6 @@ async function nextProblem() {
   setViewBox(svg);
   tehon.setAttribute("viewBox", svg.getAttribute("viewBox"));
 
-  svg.style.width = "100%";
-  svg.style.height = "100%";
   const targets = document.querySelectorAll("#problems .iconContainer");
   targets[0].replaceChildren(tehon);
   targets[1].replaceChildren(svg);
