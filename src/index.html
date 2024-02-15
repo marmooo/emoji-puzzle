@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+  <head prefix="og: http://ogp.me/ns#">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="An emoji puzzle game where you rearrange the parts while comparing to the original.">
+    <title>Emoji Puzzle</title>
+    <meta property="og:title" content="Emoji Puzzle">
+    <meta property="og:site_name" content="Emoji Puzzle">
+    <meta property="og:description" content="An emoji puzzle game where you rearrange the parts while comparing to the original.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://marmooo.github.io/emoji-puzzle/">
+    <meta property="og:image" content="https://marmooo.github.io/emoji-puzzle/favicon/apple-touch-icon.png">
+    <meta name="twitter:card" content="summary">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-F2179JXDYY"></script> -->
+    <!-- <script> -->
+    <!--   window.dataLayer = window.dataLayer || []; -->
+    <!--   function gtag(){dataLayer.push(arguments);} -->
+    <!--   gtag('js', new Date()); -->
+    <!--   gtag('config', 'G-F2179JXDYY'); -->
+    <!-- </script> -->
+    <!-- <script> -->
+    <!--   if ('serviceWorker' in navigator) { -->
+    <!--     window.addEventListener('load', function() { -->
+    <!--       navigator.serviceWorker.register('/emoji-puzzle/sw.js'); -->
+    <!--     }); -->
+    <!--   } -->
+    <!-- </script> -->
+    <link rel="icon" type="image/png" href="/emoji-puzzle/favicon/favicon.png">
+    <link rel="icon" type="image/svg+xml" href="/emoji-puzzle/favicon/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="/emoji-puzzle/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="/emoji-puzzle/favicon/site.webmanifest">
+    <link rel="alternate" href="https://marmooo.github.io/emoji-puzzle/" hreflang="x-default">
+    <link rel="alternate" href="https://marmooo.github.io/emoji-puzzle/ja/" hreflang="ja">
+    <link rel="alternate" href="https://marmooo.github.io/emoji-puzzle/en/" hreflang="en">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <style>
+      .iconContainer { max-width:100%; max-height:100%; aspect-ratio:1/1; }
+      #canvas { position:absolute; left:0; top:0; width:100%; height:100%; z-index:-1; }
+      html[data-bs-theme="dark"] .favicon { filter: invert(1) hue-rotate(180deg); }
+    </style>
+    <!-- <script data-ad-client="ca-pub-6459713332128733" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> -->
+  </head>
+  <body>
+    <header>
+      <nav class="navbar navbar-expand navbar-light">
+        <div class="container flex-wrap">
+          <div class="d-flex align-items-center">
+            <a class="navbar-brand" href="/emoji-puzzle/">
+              <img class="favicon" alt="" src="/emoji-puzzle/favicon/favicon.svg" width="32" height="32">
+              Emoji Puzzle
+            </a>
+            <select title="language" id="lang" class="form-select form-select-sm ms-1">
+              <option value="ja">日本語</option>
+              <option value="en" selected>English</option>
+            </select>
+          </div>
+          <div class="navbar-nav text-nowrap">
+            <button id="startButton" class="btn btn-sm btn-primary" type="button">START</button>
+            <select title="course" id="course" class="form-select form-select-sm ms-1">
+              <optgroup label="Color">
+                <option value="noto-emoji">Noto Color Emoji</option>
+                <option value="twemoji">Twemoji</option>
+                <option value="fluentui-emoji-flat">Fluent Emoji (Color)</option>
+                <option value="blobmoji">Blobmoji</option>
+                <option value="emojitwo">Emoji Two (Color)</option>
+              </optgroup>
+              <optgroup label="Twotone">
+                <option value="fluentui-emoji-high-contrast">Fluent Emoji (High Contrast)</option>
+                <option value="noto-emoji-twotone">Noto Emoji Twotone</option>
+                <option value="android-emoji">Android Emoji</option>
+                <option value="emojitwo-twotone">Emoji Two (Twotone)</option>
+              </optgroup>
+            </select>
+            <button title="toggle dark-mode" id="toggleDarkMode" class="fs-4 btn p-0 ms-1" type="button">🌓</button>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <main class="container">
+      <noscript>
+        <div class="alert alert-warning">Please turn on Javascript.</div>
+      </noscript>
+      <div id="problems" class="row">
+        <div class="col-md">
+          <div class="iconContainer"></div>
+        </div>
+        <div class="col-md">
+          <div class="position-relative">
+            <div class="iconContainer"></div>
+            <canvas id="canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer class="pt-4 alert text-center">
+      <div id="attribution">
+        <div>
+          <a href="https://github.com/googlefonts/noto-emoji">Noto Color Emoji</a> /
+          <a href="https://github.com/googlefonts/noto-emoji/blob/main/LICENSE">Apache-2.0</a>
+        </div>
+        <div>
+          <a href="https://github.com/twitter/twemoji">Twemoji</a> /
+          <a href="https://github.com/twitter/twemoji/blob/master/LICENSE-GRAPHICS">CC-BY-4.0</a>
+        </div>
+        <div>
+          <a href="https://github.com/microsoft/fluentui-emoji">Fluent Emoji (Color)</a> /
+          <a href="https://github.com/microsoft/fluentui-emoji/blob/main/LICENSE">MIT</a>
+        </div>
+        <div>
+          <a href="https://github.com/C1710/blobmoji">Blobmoji</a> /
+          <a href="https://github.com/C1710/blobmoji/blob/main/LICENSE">Apache-2.0</a>
+        </div>
+        <div>
+          <a href="https://github.com/EmojiTwo/emojitwo">Emoji Two (Color)</a> /
+          <a href="https://github.com/EmojiTwo/emojitwo/blob/master/LICENSE.md">CC-BY-4.0</a>
+        </div>
+        <div>
+          <a href="https://github.com/microsoft/fluentui-emoji">Fluent Emoji (High Contrast)</a> /
+          <a href="https://github.com/microsoft/fluentui-emoji/blob/main/LICENSE">MIT</a>
+        </div>
+        <div>
+          <a href="https://fonts.google.com/noto/specimen/Noto+Emoji">Noto Emoji Twotone</a> /
+          <a href="https://fonts.google.com/noto/specimen/Noto+Emoji/about">SIL-OFL-1.1</a>
+        </div>
+        <div>
+          <a href="https://github.com/aosp-mirror/platform_frameworks_base">Android Emoji</a> /
+          <a href="https://github.com/aosp-mirror/platform_frameworks_base/blob/jb-mr2.0.0-release/MODULE_LICENSE_APACHE2">Apache-2.0</a>
+        </div>
+        <div>
+          <a href="https://github.com/EmojiTwo/emojitwo">Emoji Two (Twotone)</a> /
+          <a href="https://github.com/EmojiTwo/emojitwo/blob/master/LICENSE.md">CC-BY-4.0</a>
+        </div>
+      </div>
+      <div class="pt-3">
+        <a class="px-1" href="/">Home</a>
+        <a class="px-1" href="/terms/">Terms</a>
+        <a class="px-1" href="https://github.com/marmooo/emoji-puzzle">Contact</a>
+      </div>
+      <div class="text-muted">&copy; <a href="https://github.com/marmooo">marmooo</a>
+      </div>
+    </footer>
+    <div class="drop-inline-css d-none"></div>
+    <script type="module" src="/emoji-puzzle/index.js"></script>
+  </body>
+</html>
+
