@@ -309,14 +309,15 @@ function drawLatice(svg) {
   const width = viewBox[2] - viewBox[0];
   const height = viewBox[3] - viewBox[1];
   const strokeWidth = width / svg.getBoundingClientRect().width;
-  const widthStep = (width - strokeWidth) / n;
+  const widthStep = (height - strokeWidth) / n;
   const heightStep = (height - strokeWidth) / n;
-  const pathData = [["M", 0, 0]];
+  const left = (width - height) / 2;
+  const pathData = [["M", left, 0]];
   for (let i = 0; i <= n; i++) {
-    pathData.push(["h", width]);
-    pathData.push(["m", -width, heightStep]);
+    pathData.push(["h", height]);
+    pathData.push(["m", -height, heightStep]);
   }
-  pathData.push(["M", 0, 0]);
+  pathData.push(["M", left, 0]);
   for (let i = 0; i <= n; i++) {
     pathData.push(["v", height]);
     pathData.push(["m", widthStep, -height]);
