@@ -1,13 +1,13 @@
 const CACHE_NAME = "2024-02-15 10:00";
 const urlsToCache = [
-  "/plot-emoji/",
-  "/plot-emoji/en/",
-  "/plot-emoji/index.js",
-  "/plot-emoji/mp3/boyon1.mp3",
-  "/plot-emoji/mp3/pa1.mp3",
-  "/plot-emoji/mp3/papa1.mp3",
-  "/plot-emoji/mp3/levelup1.mp3",
-  "/plot-emoji/favicon/favicon.svg",
+  "/emoji-puzzle/",
+  "/emoji-puzzle/en/",
+  "/emoji-puzzle/index.js",
+  "/emoji-puzzle/mp3/boyon1.mp3",
+  "/emoji-puzzle/mp3/pa1.mp3",
+  "/emoji-puzzle/mp3/papa1.mp3",
+  "/emoji-puzzle/mp3/levelup1.mp3",
+  "/emoji-puzzle/favicon/favicon.svg",
 ];
 
 self.addEventListener("install", (event) => {
