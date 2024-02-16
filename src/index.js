@@ -305,15 +305,22 @@ function styleAttributeToAttributes(svg) {
 function draggable(svg) {
   document.onmouseup = () => {
     drag.isMouseDown = false;
-  }
+  };
   document.onmousemove = (event) => {
-    if (drag.isMouseDown == true) {
-      const tx = (event.clientX - drag.offsetX) * drag.scale;
-      const ty = (event.clientY - drag.offsetY) * drag.scale;
+    if (drag.isMouseDown) {
+      const { minX, minY, maxX, maxY, scale, offsetX, offsetY } = drag;
+      let x = event.clientX;
+      let y = event.clientY;
+      if (x < minX) x = minX;
+      if (y < minY) y = minY;
+      if (maxX < x) x = maxX;
+      if (maxY < y) y = maxY;
+      const tx = (x - offsetX) * scale;
+      const ty = (y - offsetY) * scale;
       const transform = `translate(${tx},${ty})`;
       drag.target.setAttribute("transform", transform);
     }
-  }
+  };
   [...svg.querySelectorAll("path")].forEach((path) => {
     path.addEventListener("mousedown", (event) => {
       event.preventDefault();
@@ -328,6 +335,16 @@ function draggable(svg) {
         drag.offsetX = event.clientX - px / drag.scale;
         drag.offsetY = event.clientY - py / drag.scale;
         drag.scale = getViewBox(svg)[3] / svg.getBoundingClientRect().width;
+        const svgRect = svg.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+        const centerX = targetRect.left + targetRect.width / 2;
+        const centerY = targetRect.top + targetRect.height / 2;
+        const dx = centerX - event.clientX;
+        const dy = centerY - event.clientY;
+        drag.minX = svgRect.left - dx;
+        drag.minY = svgRect.top - dy;
+        drag.maxX = svgRect.right - dx;
+        drag.maxY = svgRect.bottom - dy;
         drag.isMouseDown = true;
       }
     });
@@ -431,16 +448,16 @@ function selectAttribution(index) {
 const svgNamespace = "http://www.w3.org/2000/svg";
 const xlinkNamespace = "http://www.w3.org/1999/xlink";
 const drag = {
-  isMouseDown : false,
-  target : null,
-  offsetX : 0,
-  offsetY : 0,
+  isMouseDown: false,
+  target: null,
+  offsetX: 0,
+  offsetY: 0,
   minX: Infinity,
   minY: Infinity,
   maxX: -Infinity,
   maxY: -Infinity,
   scale: 1,
-}
+};
 let svg;
 let problem;
 let iconList = [];
