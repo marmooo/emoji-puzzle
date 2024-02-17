@@ -258,38 +258,6 @@ function removeSvgTagAttributes(svg) {
   }
 }
 
-function fixIconCode(svg, color) {
-  const course = courseNode.options[courseNode.selectedIndex].value;
-  switch (course) {
-    case "fluentui-emoji-high-contrast":
-      for (const node of svg.querySelectorAll('[fill="#212121"]')) {
-        console.log(color);
-        node.setAttribute("fill", color);
-      }
-      break;
-  }
-}
-
-function computeAttribute(node, attributeName) {
-  let attributeValue;
-  while (!attributeValue && node && node.tagName) {
-    attributeValue = node.getAttribute(attributeName);
-    node = node.parentNode;
-  }
-  return attributeValue;
-}
-
-function resetCurrentColor(node) {
-  const fill = computeAttribute(node, "fill");
-  const stroke = computeAttribute(node, "stroke");
-  if (fill && fill.toLowerCase() == "currentcolor") {
-    node.setAttribute("fill", "gray");
-  }
-  if (stroke && stroke.toLowerCase() == "currentcolor") {
-    node.setAttribute("stroke", "gray");
-  }
-}
-
 function styleAttributeToAttributes(svg) {
   [...svg.querySelectorAll("[style]")].forEach((node) => {
     node.getAttribute("style").split(";").forEach((style) => {
@@ -394,14 +362,9 @@ async function nextProblem() {
   if (!tehon.getAttribute("fill")) tehon.setAttribute("fill", "currentColor");
   tehon.style.width = "100%";
   tehon.style.height = "100%";
-  fixIconCode(tehon, "currentColor");
-
-  if (!svg.getAttribute("fill")) svg.setAttribute("fill", "gray");
   svg.style.width = "100%";
   svg.style.height = "100%";
-  fixIconCode(svg, "gray");
 
-  resetCurrentColor(svg);
   removeSvgTagAttributes(svg);
   shape2path(svg, createPath, { circleAlgorithm: "QuadBezier" });
   removeUseTags(svg);
