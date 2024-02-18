@@ -79,6 +79,36 @@ function getTransforms(node) {
   return transforms.reverse();
 }
 
+function generateRandomString(length) {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  return Array.from({ length }, () => {
+    return characters[Math.floor(Math.random() * characters.length)]
+  }).join("");
+}
+
+function uniqIds(svg) {
+  const ids = {};
+  [...svg.querySelectorAll("[id]")].forEach((node) => {
+    const id = node.getAttribute("id");
+    const newId = `id_${generateRandomString(64)}`;
+    node.setAttribute(id, newId);
+    ids[id] = newId;
+  });
+  [...svg.getElementsByTagName("*")].forEach((node) => {
+    for (const attr of node.attributes) {
+      if (attr.value.startsWith("url(#")) {
+        const id = attr.value.slice(5, -1);
+        const newId = ids[id];
+        if (newId) {
+          attr.value = `url(#${newId})`;
+        } else {
+          console.log("uniqIds error");
+        }
+      }
+    }
+  });
+}
+
 function removeTransforms(svg) {
   for (const path of svg.getElementsByTagName("path")) {
     const d = path.getAttribute("d");
@@ -158,6 +188,7 @@ async function fetchIconList(course) {
 async function fetchIcon(url) {
   // url = "/svg/bootstrap-icons/shield-fill-check.svg";
   // url = "/svg/majesticons/line/image-circle-story-line.svg";
+  url = "/svg/blobmoji/railway car.svg";
   console.log(url);
   const response = await fetch(url);
   const svg = await response.text();
@@ -368,6 +399,7 @@ async function nextProblem() {
   removeSvgTagAttributes(svg);
   shape2path(svg, createPath, { circleAlgorithm: "QuadBezier" });
   removeUseTags(svg);
+  uniqIds(svg);
   removeTransforms(svg);
   problem = [];
   [...svg.getElementsByTagName("path")].forEach((path) => {
