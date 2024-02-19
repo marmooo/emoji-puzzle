@@ -188,7 +188,8 @@ async function fetchIconList(course) {
 async function fetchIcon(url) {
   // url = "/svg/bootstrap-icons/shield-fill-check.svg";
   // url = "/svg/majesticons/line/image-circle-story-line.svg";
-  url = "/svg/blobmoji/couple with heart man man.svg";
+  // url = "/svg/blobmoji/couple with heart man man.svg";
+  url = "/svg/blobmoji/emoji_u1f645_1f3ff_200d_2640.svg";
   console.log(url);
   const response = await fetch(url);
   const svg = await response.text();
@@ -381,15 +382,16 @@ function drawLatice(svg) {
 }
 
 function shuffle(svg) {
-  const svgRect = svg.getBBox();
+  const svgRect = svg.getBoundingClientRect();
   const svgX = svgRect.x + svgRect.width / 2;
   const svgY = svgRect.y + svgRect.height / 2;
+  const scale = svgRect.width / getViewBox(svg)[3];
   [...svg.getElementsByTagName("path")].forEach((path) => {
-    const pathRect = path.getBBox();
+    const pathRect = path.getBoundingClientRect();
     const pathX = pathRect.x + pathRect.width / 2;
     const pathY = pathRect.y + pathRect.height / 2;
-    const tx = svgX - pathX;
-    const ty = svgY - pathY;
+    const tx = (svgX - pathX) * scale;
+    const ty = (svgY - pathY) * scale;
     const transform = `translate(${tx},${ty})`;
     path.setAttribute("transform", transform);
   });
@@ -472,10 +474,10 @@ const drag = {
   maxY: -Infinity,
   scale: 1,
 };
+const motionRatio = 0.8;
 let svg;
 let problem;
 let iconList = [];
-let motionRatio = 0.8;
 
 selectRandomCourse();
 nextProblem();
