@@ -315,8 +315,8 @@ function draggable(svg) {
       if (y < minY) y = minY;
       if (maxX < x) x = maxX;
       if (maxY < y) y = maxY;
-      const tx = (x - offsetX) * scale;
-      const ty = (y - offsetY) * scale;
+      const tx = (x - offsetX) / scale;
+      const ty = (y - offsetY) / scale;
       const transform = `translate(${tx},${ty})`;
       drag.target.setAttribute("transform", transform);
     }
@@ -333,9 +333,9 @@ function draggable(svg) {
         const [px, py] = transform
           ? transform.slice(10, -1).split(",").map(Number)
           : [0, 0];
-        drag.offsetX = event.clientX - px / drag.scale;
-        drag.offsetY = event.clientY - py / drag.scale;
-        drag.scale = getViewBox(svg)[3] / svg.getBoundingClientRect().width;
+        drag.offsetX = event.clientX - px * drag.scale;
+        drag.offsetY = event.clientY - py * drag.scale;
+        drag.scale = svg.getBoundingClientRect().width / getViewBox(svg)[3];
         const svgRect = svg.getBoundingClientRect();
         const targetRect = target.getBoundingClientRect();
         const centerX = targetRect.left + targetRect.width / 2;
