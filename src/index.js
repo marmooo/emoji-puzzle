@@ -319,7 +319,7 @@ function draggable(svg) {
       drag.target.setAttribute("transform", transform);
     }
   };
-  [...svg.querySelectorAll("path")].forEach((path) => {
+  [...svg.getElementsByTagName("path")].forEach((path) => {
     path.addEventListener("mousedown", (event) => {
       event.preventDefault();
       const target = document.elementsFromPoint(event.clientX, event.clientY)
