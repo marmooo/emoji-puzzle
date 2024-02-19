@@ -80,9 +80,10 @@ function getTransforms(node) {
 }
 
 function generateRandomString(length) {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   return Array.from({ length }, () => {
-    return characters[Math.floor(Math.random() * characters.length)]
+    return characters[Math.floor(Math.random() * characters.length)];
   }).join("");
 }
 
@@ -187,7 +188,7 @@ async function fetchIconList(course) {
 async function fetchIcon(url) {
   // url = "/svg/bootstrap-icons/shield-fill-check.svg";
   // url = "/svg/majesticons/line/image-circle-story-line.svg";
-  url = "/svg/blobmoji/emoji_u1f468_1f3fc_200d_1f9bc.svg";
+  url = "/svg/blobmoji/couple with heart man man.svg";
   console.log(url);
   const response = await fetch(url);
   const svg = await response.text();
@@ -319,6 +320,7 @@ function draggable(svg) {
       drag.target.setAttribute("transform", transform);
     }
   };
+  const ratio = motionRatio - 0.5;
   [...svg.getElementsByTagName("path")].forEach((path) => {
     path.addEventListener("mousedown", (event) => {
       event.preventDefault();
@@ -339,10 +341,12 @@ function draggable(svg) {
         const centerY = targetRect.top + targetRect.height / 2;
         const dx = centerX - event.clientX;
         const dy = centerY - event.clientY;
-        drag.minX = svgRect.left - dx;
-        drag.minY = svgRect.top - dy;
-        drag.maxX = svgRect.right - dx;
-        drag.maxY = svgRect.bottom - dy;
+        const widthRange = targetRect.width * ratio;
+        const heightRange = targetRect.height * ratio;
+        drag.minX = svgRect.left - dx - widthRange;
+        drag.minY = svgRect.top - dy - heightRange;
+        drag.maxX = svgRect.right - dx + widthRange;
+        drag.maxY = svgRect.bottom - dy + heightRange;
         drag.isMouseDown = true;
       }
     });
@@ -471,6 +475,7 @@ const drag = {
 let svg;
 let problem;
 let iconList = [];
+let motionRatio = 0.8;
 
 selectRandomCourse();
 nextProblem();
