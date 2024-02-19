@@ -376,6 +376,21 @@ function drawLatice(svg) {
   svg.appendChild(path);
 }
 
+function shuffle(svg) {
+  const svgRect = svg.getBBox();
+  const svgX = svgRect.x + svgRect.width / 2;
+  const svgY = svgRect.y + svgRect.height / 2;
+  [...svg.getElementsByTagName("path")].forEach((path) => {
+    const pathRect = path.getBBox();
+    const pathX = pathRect.x + pathRect.width / 2;
+    const pathY = pathRect.y + pathRect.height / 2;
+    const tx = svgX - pathX;
+    const ty = svgY - pathY;
+    const transform = `translate(${tx},${ty})`;
+    path.setAttribute("transform", transform);
+  });
+}
+
 async function nextProblem() {
   const courseNode = document.getElementById("course");
   const course = courseNode.options[courseNode.selectedIndex].value;
@@ -404,6 +419,7 @@ async function nextProblem() {
     problem.push({ path });
   });
   draggable(svg);
+  shuffle(svg);
 
   tehon.style.width = "100%";
   tehon.style.height = "100%";
