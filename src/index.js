@@ -293,55 +293,76 @@ function styleAttributeToAttributes(svg) {
   });
 }
 
+function pieceUpEvent() {
+  drag.isMouseDown = false;
+  scoring(svg);
+}
+
+function pieceMoveEvent(event) {
+  if (drag.isMouseDown) {
+    const { minX, minY, maxX, maxY, scale, offsetX, offsetY } = drag;
+    let x = event.clientX;
+    let y = event.clientY;
+    if (x < minX) x = minX;
+    if (y < minY) y = minY;
+    if (maxX < x) x = maxX;
+    if (maxY < y) y = maxY;
+    const tx = (x - offsetX) / scale;
+    const ty = (y - offsetY) / scale;
+    const transform = `translate(${tx},${ty})`;
+    drag.target.setAttribute("transform", transform);
+  }
+}
+
+function pieceDownEvent(event, ratio) {
+  const target = document.elementsFromPoint(event.clientX, event.clientY)
+    .find((node) => node.tagName == "path");
+  if (target) {
+    drag.id = event.identifier || Date.now();
+    drag.target = target;
+    const transform = target.getAttribute("transform");
+    const [px, py] = transform
+      ? transform.slice(10, -1).split(",").map(Number)
+      : [0, 0];
+    drag.offsetX = event.clientX - px * drag.scale;
+    drag.offsetY = event.clientY - py * drag.scale;
+    drag.scale = svg.getBoundingClientRect().width / getViewBox(svg)[3];
+    const svgRect = svg.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    const centerX = targetRect.left + targetRect.width / 2;
+    const centerY = targetRect.top + targetRect.height / 2;
+    const dx = centerX - event.clientX;
+    const dy = centerY - event.clientY;
+    const widthRange = targetRect.width * ratio;
+    const heightRange = targetRect.height * ratio;
+    drag.minX = svgRect.left - dx - widthRange;
+    drag.minY = svgRect.top - dy - heightRange;
+    drag.maxX = svgRect.right - dx + widthRange;
+    drag.maxY = svgRect.bottom - dy + heightRange;
+    drag.isMouseDown = true;
+  }
+}
+
 function draggable(svg) {
-  document.onmouseup = () => {
-    drag.isMouseDown = false;
-    scoring(svg);
-  };
-  document.onmousemove = (event) => {
-    if (drag.isMouseDown) {
-      const { minX, minY, maxX, maxY, scale, offsetX, offsetY } = drag;
-      let x = event.clientX;
-      let y = event.clientY;
-      if (x < minX) x = minX;
-      if (y < minY) y = minY;
-      if (maxX < x) x = maxX;
-      if (maxY < y) y = maxY;
-      const tx = (x - offsetX) / scale;
-      const ty = (y - offsetY) / scale;
-      const transform = `translate(${tx},${ty})`;
-      drag.target.setAttribute("transform", transform);
-    }
-  };
   const ratio = motionRatio - 0.5;
+  document.addEventListener("mouseup", pieceUpEvent);
+  document.addEventListener("mousemove", pieceMoveEvent);
+  document.addEventListener("touchend", pieceUpEvent);
+  document.addEventListener("touchmove", (event) => {
+    for (let i = 0; event.changedTouches.length; i++) {
+      const touch = event.changedTouches[i];
+      if (touch.identifier == drag.id) {
+        pieceMoveEvent(touch);
+      }
+    }
+  });
   [...svg.getElementsByTagName("path")].forEach((path) => {
     path.addEventListener("mousedown", (event) => {
-      event.preventDefault();
-      const target = document.elementsFromPoint(event.clientX, event.clientY)
-        .find((node) => node.tagName == "path");
-      if (target) {
-        drag.target = target;
-        const transform = target.getAttribute("transform");
-        const [px, py] = transform
-          ? transform.slice(10, -1).split(",").map(Number)
-          : [0, 0];
-        drag.offsetX = event.clientX - px * drag.scale;
-        drag.offsetY = event.clientY - py * drag.scale;
-        drag.scale = svg.getBoundingClientRect().width / getViewBox(svg)[3];
-        const svgRect = svg.getBoundingClientRect();
-        const targetRect = target.getBoundingClientRect();
-        const centerX = targetRect.left + targetRect.width / 2;
-        const centerY = targetRect.top + targetRect.height / 2;
-        const dx = centerX - event.clientX;
-        const dy = centerY - event.clientY;
-        const widthRange = targetRect.width * ratio;
-        const heightRange = targetRect.height * ratio;
-        drag.minX = svgRect.left - dx - widthRange;
-        drag.minY = svgRect.top - dy - heightRange;
-        drag.maxX = svgRect.right - dx + widthRange;
-        drag.maxY = svgRect.bottom - dy + heightRange;
-        drag.isMouseDown = true;
-      }
+      pieceDownEvent(event, ratio);
+    });
+    path.addEventListener("touchstart", (event) => {
+      const touch = event.changedTouches[0];
+      pieceDownEvent(touch, ratio);
     });
   });
 }
@@ -467,6 +488,7 @@ async function scoring(svg) {
 const svgNamespace = "http://www.w3.org/2000/svg";
 const xlinkNamespace = "http://www.w3.org/1999/xlink";
 const drag = {
+  id: null,
   isMouseDown: false,
   target: null,
   offsetX: 0,
