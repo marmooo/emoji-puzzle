@@ -322,9 +322,10 @@ function pieceDownEvent(event, ratio) {
     const [px, py] = transform
       ? transform.slice(10, -1).split(",").map(Number)
       : [0, 0];
-    drag.offsetX = event.clientX - px * drag.scale;
-    drag.offsetY = event.clientY - py * drag.scale;
-    drag.scale = svg.getBoundingClientRect().width / getViewBox(svg)[3];
+    const scale = svg.getBoundingClientRect().width / getViewBox(svg)[3];
+    drag.scale = scale;
+    drag.offsetX = event.clientX - px * scale;
+    drag.offsetY = event.clientY - py * scale;
     const svgRect = svg.getBoundingClientRect();
     const targetRect = target.getBoundingClientRect();
     const centerX = targetRect.left + targetRect.width / 2;
