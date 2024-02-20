@@ -5,10 +5,8 @@ import { toPixelData } from "https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/
 const courseNode = document.getElementById("course");
 const audioContext = new AudioContext();
 const audioBufferCache = {};
-loadAudio("error", "/emoji-puzzle/mp3/boyon1.mp3");
-loadAudio("correct1", "/emoji-puzzle/mp3/pa1.mp3");
-loadAudio("correct2", "/emoji-puzzle/mp3/papa1.mp3");
-loadAudio("correctAll", "/emoji-puzzle/mp3/levelup1.mp3");
+loadAudio("modified", "/emoji-puzzle/mp3/decision50.mp3");
+loadAudio("correctAll", "/emoji-puzzle/mp3/correct1.mp3");
 loadConfig();
 
 function loadConfig() {
@@ -411,6 +409,7 @@ function shuffle(svg) {
 }
 
 async function nextProblem() {
+  maxScore = 90;
   const courseNode = document.getElementById("course");
   const course = courseNode.options[courseNode.selectedIndex].value;
   if (iconList.length == 0) {
@@ -482,6 +481,12 @@ async function scoring(svg) {
     if (pixels[i] == tehonPixels[i]) correctCount += 1;
   }
   const score = Math.round(correctCount / pixels.length * 100);
+  if (maxScore < score) {
+    maxScore = score;
+    playAudio("correctAll");
+  } else {
+    playAudio("modified");
+  }
   document.getElementById("score").textContent = score;
 }
 
@@ -505,6 +510,7 @@ let svg;
 let problem;
 let iconList = [];
 let tehonPixels;
+let maxScore = 90;
 
 selectRandomCourse();
 nextProblem();
