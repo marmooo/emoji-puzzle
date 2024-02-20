@@ -1,5 +1,6 @@
 import { shape2path } from "https://cdn.jsdelivr.net/npm/@marmooo/shape2path@0.0.2/+esm";
 import svgpath from "https://cdn.jsdelivr.net/npm/svgpath@2.6.0/+esm";
+import { toPixelData } from "https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/+esm";
 
 const courseNode = document.getElementById("course");
 const audioContext = new AudioContext();
@@ -67,16 +68,6 @@ function createPath(node) {
     path.setAttribute(attribute.name, attribute.value);
   }
   return path;
-}
-
-function getTransforms(node) {
-  const transforms = [];
-  while (node.tagName) {
-    const transform = node.getAttribute("transform");
-    if (transform) transforms.push(transform);
-    node = node.parentNode;
-  }
-  return transforms.reverse();
 }
 
 function generateRandomString(length) {
@@ -305,6 +296,7 @@ function styleAttributeToAttributes(svg) {
 function draggable(svg) {
   document.onmouseup = () => {
     drag.isMouseDown = false;
+    scoring(svg);
   };
   document.onmousemove = (event) => {
     if (drag.isMouseDown) {
@@ -435,6 +427,7 @@ async function nextProblem() {
   tehon.setAttribute("viewBox", svg.getAttribute("viewBox"));
   drawLatice(tehon);
   drawLatice(svg);
+  tehonPixels = await toPixelData(tehon, htmlToImageOptions);
 }
 
 async function changeCourse() {
@@ -461,6 +454,16 @@ function selectAttribution(index) {
   });
 }
 
+async function scoring(svg) {
+  const pixels = await toPixelData(svg, htmlToImageOptions);
+  let correctCount = 0;
+  for (let i = 0; i < pixels.length; i++) {
+    if (pixels[i] == tehonPixels[i]) correctCount += 1;
+  }
+  const score = Math.round(correctCount / pixels.length * 100);
+  document.getElementById("score").textContent = score;
+}
+
 const svgNamespace = "http://www.w3.org/2000/svg";
 const xlinkNamespace = "http://www.w3.org/1999/xlink";
 const drag = {
@@ -475,9 +478,11 @@ const drag = {
   scale: 1,
 };
 const motionRatio = 0.8;
+const htmlToImageOptions = { width: 128, height: 128 };
 let svg;
 let problem;
 let iconList = [];
+let tehonPixels;
 
 selectRandomCourse();
 nextProblem();
