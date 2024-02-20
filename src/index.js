@@ -406,6 +406,7 @@ function shuffle(svg) {
     const ty = (svgY - pathY) * scale;
     const transform = `translate(${tx},${ty})`;
     path.setAttribute("transform", transform);
+    path.style.cursor = "grab";
   });
 }
 
