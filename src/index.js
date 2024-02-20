@@ -500,7 +500,7 @@ const drag = {
   scale: 1,
 };
 const motionRatio = 0.8;
-const htmlToImageOptions = { width: 128, height: 128 };
+const htmlToImageOptions = { width: 256, height: 256 };
 let svg;
 let problem;
 let iconList = [];
