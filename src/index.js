@@ -409,7 +409,7 @@ function shuffle(svg) {
 }
 
 async function nextProblem() {
-  maxScore = 90;
+  maxScore = clearScore;
   const courseNode = document.getElementById("course");
   const course = courseNode.options[courseNode.selectedIndex].value;
   if (iconList.length == 0) {
@@ -504,13 +504,14 @@ const drag = {
   maxY: -Infinity,
   scale: 1,
 };
+const clearScore = 90;
 const motionRatio = 0.8;
 const htmlToImageOptions = { width: 256, height: 256 };
 let svg;
 let problem;
 let iconList = [];
 let tehonPixels;
-let maxScore = 90;
+let maxScore = clearScore;
 
 selectRandomCourse();
 nextProblem();
