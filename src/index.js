@@ -298,23 +298,23 @@ function pieceUpEvent() {
 }
 
 function pieceMoveEvent(event) {
-  if (drag.isMouseDown) {
-    const { minX, minY, maxX, maxY, scale, offsetX, offsetY } = drag;
-    let x = event.clientX;
-    let y = event.clientY;
-    if (x < minX) x = minX;
-    if (y < minY) y = minY;
-    if (maxX < x) x = maxX;
-    if (maxY < y) y = maxY;
-    const tx = (x - offsetX) / scale;
-    const ty = (y - offsetY) / scale;
-    const transform = `translate(${tx},${ty})`;
-    drag.target.setAttribute("transform", transform);
-  }
+  if (!drag.isMouseDown) return;
+  const { minX, minY, maxX, maxY, scale, x, y } = drag;
+  let clientX = event.clientX;
+  let clientY = event.clientY;
+  if (clientX < minX) clientX = minX;
+  if (clientY < minY) clientY = minY;
+  if (maxX < clientX) clientX = maxX;
+  if (maxY < clientY) clientY = maxY;
+  const tx = (clientX - x) / scale;
+  const ty = (clientY - y) / scale;
+  const transform = `translate(${tx},${ty})`;
+  drag.target.setAttribute("transform", transform);
 }
 
 function pieceDownEvent(event, ratio) {
-  const target = document.elementsFromPoint(event.clientX, event.clientY)
+  const { clientX, clientY } = event;
+  const target = document.elementsFromPoint(clientX, clientY)
     .find((node) => node.tagName == "path");
   if (target) {
     drag.id = event.identifier || Date.now();
@@ -325,14 +325,14 @@ function pieceDownEvent(event, ratio) {
       : [0, 0];
     const scale = svg.getBoundingClientRect().width / getViewBox(svg)[3];
     drag.scale = scale;
-    drag.offsetX = event.clientX - px * scale;
-    drag.offsetY = event.clientY - py * scale;
+    drag.x = clientX - px * scale;
+    drag.y = clientY - py * scale;
     const svgRect = svg.getBoundingClientRect();
     const targetRect = target.getBoundingClientRect();
     const centerX = targetRect.left + targetRect.width / 2;
     const centerY = targetRect.top + targetRect.height / 2;
-    const dx = centerX - event.clientX;
-    const dy = centerY - event.clientY;
+    const dx = centerX - clientX;
+    const dy = centerY - clientY;
     const widthRange = targetRect.width * ratio;
     const heightRange = targetRect.height * ratio;
     drag.minX = svgRect.left - dx - widthRange;
@@ -497,10 +497,10 @@ const svgNamespace = "http://www.w3.org/2000/svg";
 const xlinkNamespace = "http://www.w3.org/1999/xlink";
 const drag = {
   id: null,
-  isMouseDown: false,
   target: null,
-  offsetX: 0,
-  offsetY: 0,
+  isMouseDown: false,
+  x: 0,
+  y: 0,
   minX: Infinity,
   minY: Infinity,
   maxX: -Infinity,
