@@ -292,6 +292,7 @@ function styleAttributeToAttributes(svg) {
 }
 
 function pieceUpEvent() {
+  if (!drag.isMouseDown) return;
   drag.isMouseDown = false;
   scoring(svg);
 }
@@ -344,10 +345,10 @@ function pieceDownEvent(event, ratio) {
 
 function draggable(svg) {
   const ratio = motionRatio - 0.5;
-  document.addEventListener("mouseup", pieceUpEvent);
-  document.addEventListener("mousemove", pieceMoveEvent);
-  document.addEventListener("touchend", pieceUpEvent);
-  document.addEventListener("touchmove", (event) => {
+  svg.addEventListener("mouseup", pieceUpEvent);
+  svg.addEventListener("mousemove", pieceMoveEvent);
+  svg.addEventListener("touchend", pieceUpEvent);
+  svg.addEventListener("touchmove", (event) => {
     for (let i = 0; event.changedTouches.length; i++) {
       const touch = event.changedTouches[i];
       if (touch.identifier == drag.id) {
