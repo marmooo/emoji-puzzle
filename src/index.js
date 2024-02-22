@@ -81,7 +81,7 @@ function uniqIds(svg) {
   [...svg.querySelectorAll("[id]")].forEach((node) => {
     const id = node.getAttribute("id");
     const newId = `id_${generateRandomString(64)}`;
-    node.setAttribute(id, newId);
+    node.setAttribute("id", newId);
     ids[id] = newId;
   });
   [...svg.getElementsByTagName("*")].forEach((node) => {
