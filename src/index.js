@@ -112,7 +112,7 @@ function removeTransforms(svg) {
   }
   transforms.forEach(([node, ctm]) => {
     const matrix = DOMMatrix.fromMatrix(ctm);
-    node.setAttribute("transform", matrix.toString());
+    node.style.transform = matrix.toString();
   });
 }
 
@@ -308,7 +308,7 @@ function pieceMoveEvent(event) {
   if (clientY < minY) clientY = minY;
   if (maxX < clientX) clientX = maxX;
   if (maxY < clientY) clientY = maxY;
-  const prevArray = drag.target.getAttribute("transform")
+  const prevArray = drag.target.style.transform
     .slice(7, -1).split(",").map(Number);
   const prevMatrix = new DOMMatrix(prevArray);
   const tx = (clientX - x) / scale;
@@ -410,7 +410,7 @@ function shuffle(svg) {
     const pathRect = path.getBoundingClientRect();
     const pathX = pathRect.x + pathRect.width / 2;
     const pathY = pathRect.y + pathRect.height / 2;
-    const prevArray = path.getAttribute("transform")
+    const prevArray = path.style.transform
       .slice(7, -1).split(",").map(Number);
     const prevMatrix = new DOMMatrix(prevArray);
     const tx = (svgX - pathX) * scale;
