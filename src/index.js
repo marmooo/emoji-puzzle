@@ -1,5 +1,4 @@
 import { shape2path } from "https://cdn.jsdelivr.net/npm/@marmooo/shape2path@0.0.2/+esm";
-import svgpath from "https://cdn.jsdelivr.net/npm/svgpath@2.6.0/+esm";
 import { toPixelData } from "https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/+esm";
 
 const courseNode = document.getElementById("course");
@@ -104,15 +103,17 @@ function removeTransforms(svg) {
   const viewBox = getViewBox(svg);
   svg.setAttribute("width", viewBox[2]);
   svg.setAttribute("height", viewBox[3]);
+  const transforms = [];
   for (const node of svg.querySelectorAll("path, text")) {
-    const { a, b, c, d, e, f } = path.getCTM();
-    const pathData = svgpath(path.getAttribute("d"));
-    pathData.matrix([a, b, c, d, e, f]);
-    path.setAttribute("d", pathData.toString());
+    transforms.push([node, node.getCTM()]);
   }
   for (const node of svg.querySelectorAll("[transform]")) {
     node.removeAttribute("transform");
   }
+  transforms.forEach(([node, ctm]) => {
+    const matrix = DOMMatrix.fromMatrix(ctm);
+    node.setAttribute("transform", matrix.toString());
+  });
 }
 
 function removeUseTags(svg) {
@@ -178,7 +179,8 @@ async function fetchIcon(url) {
   // url = "/svg/bootstrap-icons/shield-fill-check.svg";
   // url = "/svg/majesticons/line/image-circle-story-line.svg";
   // url = "/svg/blobmoji/couple with heart man man.svg";
-  url = "/svg/blobmoji/emoji_u1f645_1f3ff_200d_2640.svg";
+  // url = "/svg/blobmoji/emoji_u1f645_1f3ff_200d_2640.svg";
+  url = "/svg/blobmoji/woman technologist dark skin tone.svg";
   console.log(url);
   const response = await fetch(url);
   const svg = await response.text();
@@ -306,23 +308,28 @@ function pieceMoveEvent(event) {
   if (clientY < minY) clientY = minY;
   if (maxX < clientX) clientX = maxX;
   if (maxY < clientY) clientY = maxY;
+  const prevArray = drag.target.getAttribute("transform")
+    .slice(7, -1).split(",").map(Number);
+  const prevMatrix = new DOMMatrix(prevArray);
   const tx = (clientX - x) / scale;
   const ty = (clientY - y) / scale;
-  const transform = `translate(${tx},${ty})`;
-  drag.target.setAttribute("transform", transform);
+  const p = new DOMPoint(tx, ty).matrixTransform(prevMatrix.inverse());
+  const moveMatrix = new DOMMatrix([1, 0, 0, 1, p.x, p.y]);
+  drag.target.style.transform = prevMatrix.multiply(moveMatrix).toString();
 }
 
 function pieceDownEvent(event, ratio) {
   const { clientX, clientY } = event;
   const target = document.elementsFromPoint(clientX, clientY)
-    .find((node) => node.tagName == "path");
+    .find((node) => node.tagName == "path" || node.tagName == "text");
   if (target) {
     drag.id = event.identifier || Date.now();
     drag.target = target;
-    const transform = target.getAttribute("transform");
-    const [px, py] = transform
-      ? transform.slice(10, -1).split(",").map(Number)
-      : [0, 0];
+    const transform = target.style.transform;
+    const matrix = transform
+      ? transform.slice(7, -1).split(",").map(Number)
+      : [1, 0, 0, 1, 0, 0];
+    const [px, py] = matrix.slice(4);
     const scale = svg.getBoundingClientRect().width / getViewBox(svg)[3];
     drag.scale = scale;
     drag.x = clientX - px * scale;
@@ -403,10 +410,14 @@ function shuffle(svg) {
     const pathRect = path.getBoundingClientRect();
     const pathX = pathRect.x + pathRect.width / 2;
     const pathY = pathRect.y + pathRect.height / 2;
+    const prevArray = path.getAttribute("transform")
+      .slice(7, -1).split(",").map(Number);
+    const prevMatrix = new DOMMatrix(prevArray);
     const tx = (svgX - pathX) * scale;
     const ty = (svgY - pathY) * scale;
-    const transform = `translate(${tx},${ty})`;
-    path.setAttribute("transform", transform);
+    const p = new DOMPoint(tx, ty).matrixTransform(prevMatrix.inverse());
+    const moveMatrix = new DOMMatrix([1, 0, 0, 1, p.x, p.y]);
+    path.style.transform = prevMatrix.multiply(moveMatrix).toString()
     path.style.cursor = "grab";
   });
 }
