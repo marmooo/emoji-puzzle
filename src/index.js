@@ -98,7 +98,7 @@ function uniqIds(svg) {
   });
 }
 
-function removeTransforms(svg) {
+function resetTransforms(svg) {
   // getCTM() requires visibility=visible & numerical width/height attributes
   const viewBox = getViewBox(svg);
   svg.setAttribute("width", viewBox[2]);
@@ -445,7 +445,7 @@ async function nextProblem() {
   targets[0].replaceChildren(tehon);
   targets[1].replaceChildren(svg);
 
-  removeTransforms(svg);
+  resetTransforms(svg);
   problem = [];
   [...svg.querySelectorAll("path, text")].forEach((path) => {
     problem.push({ path });
