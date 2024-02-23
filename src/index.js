@@ -104,7 +104,7 @@ function removeTransforms(svg) {
   const viewBox = getViewBox(svg);
   svg.setAttribute("width", viewBox[2]);
   svg.setAttribute("height", viewBox[3]);
-  for (const path of svg.getElementsByTagName("path")) {
+  for (const node of svg.querySelectorAll("path, text")) {
     const { a, b, c, d, e, f } = path.getCTM();
     const pathData = svgpath(path.getAttribute("d"));
     pathData.matrix([a, b, c, d, e, f]);
@@ -356,7 +356,7 @@ function draggable(svg) {
       }
     }
   });
-  [...svg.getElementsByTagName("path")].forEach((path) => {
+  [...svg.querySelectorAll("path, text")].forEach((path) => {
     path.addEventListener("mousedown", (event) => {
       pieceDownEvent(event, ratio);
     });
@@ -399,7 +399,7 @@ function shuffle(svg) {
   const svgX = svgRect.x + svgRect.width / 2;
   const svgY = svgRect.y + svgRect.height / 2;
   const scale = svgRect.width / getViewBox(svg)[3];
-  [...svg.getElementsByTagName("path")].forEach((path) => {
+  [...svg.querySelectorAll("path, text")].forEach((path) => {
     const pathRect = path.getBoundingClientRect();
     const pathX = pathRect.x + pathRect.width / 2;
     const pathY = pathRect.y + pathRect.height / 2;
@@ -436,7 +436,7 @@ async function nextProblem() {
 
   removeTransforms(svg);
   problem = [];
-  [...svg.getElementsByTagName("path")].forEach((path) => {
+  [...svg.querySelectorAll("path, text")].forEach((path) => {
     problem.push({ path });
   });
   draggable(svg);
