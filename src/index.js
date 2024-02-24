@@ -176,11 +176,6 @@ async function fetchIconList(course) {
 }
 
 async function fetchIcon(url) {
-  // url = "/svg/bootstrap-icons/shield-fill-check.svg";
-  // url = "/svg/majesticons/line/image-circle-story-line.svg";
-  // url = "/svg/blobmoji/couple with heart man man.svg";
-  // url = "/svg/blobmoji/emoji_u1f645_1f3ff_200d_2640.svg";
-  url = "/svg/blobmoji/woman technologist dark skin tone.svg";
   console.log(url);
   const response = await fetch(url);
   const svg = await response.text();

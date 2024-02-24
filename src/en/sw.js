@@ -1,12 +1,10 @@
-const CACHE_NAME = "2024-02-15 10:00";
+const CACHE_NAME = "2024-02-24 15:00";
 const urlsToCache = [
   "/emoji-puzzle/",
   "/emoji-puzzle/en/",
   "/emoji-puzzle/index.js",
-  "/emoji-puzzle/mp3/boyon1.mp3",
-  "/emoji-puzzle/mp3/pa1.mp3",
-  "/emoji-puzzle/mp3/papa1.mp3",
-  "/emoji-puzzle/mp3/levelup1.mp3",
+  "/emoji-puzzle/mp3/correct1.mp3",
+  "/emoji-puzzle/mp3/decision50.mp3",
   "/emoji-puzzle/favicon/favicon.svg",
 ];
 
