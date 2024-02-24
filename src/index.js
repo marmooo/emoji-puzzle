@@ -518,7 +518,7 @@ const drag = {
   maxY: -Infinity,
   scale: 1,
 };
-const clearScore = 90;
+const clearScore = 85;
 const motionRatio = 0.8;
 const htmlToImageOptions = { width: 256, height: 256 };
 let svg;
