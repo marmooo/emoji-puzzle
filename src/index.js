@@ -290,6 +290,7 @@ function styleAttributeToAttributes(svg) {
 
 function pieceUpEvent() {
   if (!drag.isMouseDown) return;
+  drag.target.style.cursor = "grab";
   drag.isMouseDown = false;
   scoring(svg);
 }
@@ -317,6 +318,7 @@ function pieceDownEvent(event, ratio) {
   const { clientX, clientY } = event;
   const target = document.elementsFromPoint(clientX, clientY)
     .find((node) => node.tagName == "path" || node.tagName == "text");
+  target.style.cursor = "grabbing";
   if (target) {
     drag.id = event.identifier || Date.now();
     drag.target = target;
