@@ -347,7 +347,7 @@ function pieceDownEvent(event, ratio) {
   }
 }
 
-function draggable(svg) {
+function draggablePieces(svg) {
   const ratio = motionRatio - 0.5;
   svg.addEventListener("mouseup", pieceUpEvent);
   svg.addEventListener("mousemove", pieceMoveEvent);
@@ -398,7 +398,7 @@ function drawLatice(svg) {
   svg.appendChild(path);
 }
 
-function shuffle(svg) {
+function shufflePieces(svg) {
   const svgRect = svg.getBoundingClientRect();
   const svgX = svgRect.x + svgRect.width / 2;
   const svgY = svgRect.y + svgRect.height / 2;
@@ -446,8 +446,8 @@ async function nextProblem() {
   [...svg.querySelectorAll("path, text")].forEach((path) => {
     problem.push({ path });
   });
-  draggable(svg);
-  shuffle(svg);
+  draggablePieces(svg);
+  shufflePieces(svg);
 
   tehon.style.width = "100%";
   tehon.style.height = "100%";
