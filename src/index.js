@@ -412,8 +412,7 @@ function shuffle(svg) {
     const prevMatrix = new DOMMatrix(prevArray);
     const tx = (svgX - pathX) * scale;
     const ty = (svgY - pathY) * scale;
-    const p = new DOMPoint(tx, ty).matrixTransform(prevMatrix.inverse());
-    const moveMatrix = new DOMMatrix([1, 0, 0, 1, p.x, p.y]);
+    const moveMatrix = new DOMMatrix([scale, 0, 0, scale, tx, ty]);
     path.style.transform = prevMatrix.multiply(moveMatrix).toString()
     path.style.cursor = "grab";
   });
