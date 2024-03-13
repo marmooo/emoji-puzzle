@@ -420,6 +420,7 @@ function shufflePieces(svg) {
 
 async function nextProblem() {
   maxScore = clearScore;
+  document.getElementById("score").textContent = 0;
   const courseNode = document.getElementById("course");
   const course = courseNode.options[courseNode.selectedIndex].value;
   if (iconList.length == 0) {
