@@ -177,6 +177,7 @@ async function fetchIconList(course) {
 
 async function fetchIcon(url) {
   console.log(url);
+  url = "/svg/emojitwo/1f0ac-1f3fe.svg";
   const response = await fetch(url);
   const svg = await response.text();
   return new DOMParser().parseFromString(svg, "image/svg+xml");
@@ -304,8 +305,10 @@ function pieceMoveEvent(event) {
   if (clientY < minY) clientY = minY;
   if (maxX < clientX) clientX = maxX;
   if (maxY < clientY) clientY = maxY;
-  const prevArray = drag.target.style.transform
-    .slice(7, -1).split(",").map(Number);
+  const transform = drag.target.style.transform;
+  const prevArray = transform
+    ? transform.slice(7, -1).split(",").map(Number)
+    : [1, 0, 0, 1, 0, 0];
   const prevMatrix = new DOMMatrix(prevArray);
   const tx = (clientX - x) / scale;
   const ty = (clientY - y) / scale;
@@ -318,32 +321,61 @@ function pieceDownEvent(event, ratio) {
   const { clientX, clientY } = event;
   const target = document.elementsFromPoint(clientX, clientY)
     .find((node) => node.tagName == "path" || node.tagName == "text");
+  if (!target) return;
+  if (!target.dataset.draggable) return;
   target.style.cursor = "grabbing";
-  if (target) {
-    drag.id = event.identifier || Date.now();
-    drag.target = target;
-    const transform = target.style.transform;
-    const matrix = transform
-      ? transform.slice(7, -1).split(",").map(Number)
-      : [1, 0, 0, 1, 0, 0];
-    const [px, py] = matrix.slice(4);
-    const scale = svg.getBoundingClientRect().width / getViewBox(svg)[3];
-    drag.scale = scale;
-    drag.x = clientX - px * scale;
-    drag.y = clientY - py * scale;
-    const svgRect = svg.getBoundingClientRect();
-    const targetRect = target.getBoundingClientRect();
-    const centerX = targetRect.left + targetRect.width / 2;
-    const centerY = targetRect.top + targetRect.height / 2;
-    const dx = centerX - clientX;
-    const dy = centerY - clientY;
-    const widthRange = targetRect.width * ratio;
-    const heightRange = targetRect.height * ratio;
-    drag.minX = svgRect.left - dx - widthRange;
-    drag.minY = svgRect.top - dy - heightRange;
-    drag.maxX = svgRect.right - dx + widthRange;
-    drag.maxY = svgRect.bottom - dy + heightRange;
-    drag.isMouseDown = true;
+  drag.id = event.identifier || Date.now();
+  drag.target = target;
+  const transform = target.style.transform;
+  const matrix = transform
+    ? transform.slice(7, -1).split(",").map(Number)
+    : [1, 0, 0, 1, 0, 0];
+  const [px, py] = matrix.slice(4);
+  const scale = svg.getBoundingClientRect().width / getViewBox(svg)[3];
+  drag.scale = scale;
+  drag.x = clientX - px * scale;
+  drag.y = clientY - py * scale;
+  const svgRect = svg.getBoundingClientRect();
+  const targetRect = target.getBoundingClientRect();
+  const centerX = targetRect.left + targetRect.width / 2;
+  const centerY = targetRect.top + targetRect.height / 2;
+  const dx = centerX - clientX;
+  const dy = centerY - clientY;
+  const widthRange = targetRect.width * ratio;
+  const heightRange = targetRect.height * ratio;
+  drag.minX = svgRect.left - dx - widthRange;
+  drag.minY = svgRect.top - dy - heightRange;
+  drag.maxX = svgRect.right - dx + widthRange;
+  drag.maxY = svgRect.bottom - dy + heightRange;
+  drag.isMouseDown = true;
+}
+
+function initPieces(svg) {
+  shufflePieces(svg);
+  draggablePieces(svg);
+}
+
+function shufflePieces(svg) {
+  const svgRect = svg.getBoundingClientRect();
+  const scale = svgRect.width / getViewBox(svg)[3];
+  const svgX = svgRect.x + svgRect.width / 2;
+  const svgY = svgRect.y + svgRect.height / 2;
+  const areaThreshold = svgRect.width * svgRect.height * areaRatio;
+  for (const path of svg.querySelectorAll("path, text")) {
+    const pathRect = path.getBoundingClientRect();
+    const area = pathRect.width * pathRect.height;
+    if (area < areaThreshold) continue;
+    const pathX = pathRect.x + pathRect.width / 2;
+    const pathY = pathRect.y + pathRect.height / 2;
+    const prevArray = path.style.transform
+      .slice(7, -1).split(",").map(Number);
+    const prevMatrix = new DOMMatrix(prevArray);
+    const tx = (svgX - pathX) * scale;
+    const ty = (svgY - pathY) * scale;
+    const moveMatrix = new DOMMatrix([scale, 0, 0, scale, tx, ty]);
+    path.style.transform = prevMatrix.multiply(moveMatrix).toString();
+    path.style.cursor = "grab";
+    path.dataset.draggable = true;
   }
 }
 
@@ -360,14 +392,12 @@ function draggablePieces(svg) {
       }
     }
   });
-  [...svg.querySelectorAll("path, text")].forEach((path) => {
-    path.addEventListener("mousedown", (event) => {
-      pieceDownEvent(event, ratio);
-    });
-    path.addEventListener("touchstart", (event) => {
-      const touch = event.changedTouches[0];
-      pieceDownEvent(touch, ratio);
-    });
+  svg.addEventListener("mousedown", (event) => {
+    pieceDownEvent(event, ratio);
+  });
+  svg.addEventListener("touchstart", (event) => {
+    const touch = event.changedTouches[0];
+    pieceDownEvent(touch, ratio);
   });
 }
 
@@ -396,26 +426,6 @@ function drawLatice(svg) {
   path.setAttribute("stroke", "gray");
   path.setAttribute("stroke-width", strokeWidth);
   svg.appendChild(path);
-}
-
-function shufflePieces(svg) {
-  const svgRect = svg.getBoundingClientRect();
-  const svgX = svgRect.x + svgRect.width / 2;
-  const svgY = svgRect.y + svgRect.height / 2;
-  const scale = svgRect.width / getViewBox(svg)[3];
-  [...svg.querySelectorAll("path, text")].forEach((path) => {
-    const pathRect = path.getBoundingClientRect();
-    const pathX = pathRect.x + pathRect.width / 2;
-    const pathY = pathRect.y + pathRect.height / 2;
-    const prevArray = path.style.transform
-      .slice(7, -1).split(",").map(Number);
-    const prevMatrix = new DOMMatrix(prevArray);
-    const tx = (svgX - pathX) * scale;
-    const ty = (svgY - pathY) * scale;
-    const moveMatrix = new DOMMatrix([scale, 0, 0, scale, tx, ty]);
-    path.style.transform = prevMatrix.multiply(moveMatrix).toString()
-    path.style.cursor = "grab";
-  });
 }
 
 async function nextProblem() {
@@ -447,8 +457,7 @@ async function nextProblem() {
   [...svg.querySelectorAll("path, text")].forEach((path) => {
     problem.push({ path });
   });
-  draggablePieces(svg);
-  shufflePieces(svg);
+  initPieces(svg);
 
   tehon.style.width = "100%";
   tehon.style.height = "100%";
@@ -517,6 +526,7 @@ const drag = {
 };
 const clearScore = 85;
 const motionRatio = 0.8;
+const areaRatio = 0.05;
 const htmlToImageOptions = { width: 256, height: 256 };
 let svg;
 let problem;
