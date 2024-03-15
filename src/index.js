@@ -1,4 +1,3 @@
-import { shape2path } from "https://cdn.jsdelivr.net/npm/@marmooo/shape2path@0.0.2/+esm";
 import { toPixelData } from "https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/+esm";
 
 const courseNode = document.getElementById("course");
@@ -104,7 +103,7 @@ function resetTransforms(svg) {
   svg.setAttribute("width", viewBox[2]);
   svg.setAttribute("height", viewBox[3]);
   const transforms = [];
-  for (const node of svg.querySelectorAll("path, text")) {
+  for (const node of svg.querySelectorAll(pieceSelector)) {
     transforms.push([node, node.getCTM()]);
   }
   for (const node of svg.querySelectorAll("[transform]")) {
@@ -177,7 +176,6 @@ async function fetchIconList(course) {
 
 async function fetchIcon(url) {
   console.log(url);
-  url = "/svg/emojitwo/1f0ac-1f3fe.svg";
   const response = await fetch(url);
   const svg = await response.text();
   return new DOMParser().parseFromString(svg, "image/svg+xml");
@@ -361,7 +359,7 @@ function shufflePieces(svg) {
   const svgX = svgRect.x + svgRect.width / 2;
   const svgY = svgRect.y + svgRect.height / 2;
   const areaThreshold = svgRect.width * svgRect.height * areaRatio;
-  for (const path of svg.querySelectorAll("path, text")) {
+  for (const path of svg.querySelectorAll(pieceSelector)) {
     const pathRect = path.getBoundingClientRect();
     const area = pathRect.width * pathRect.height;
     if (area < areaThreshold) continue;
@@ -444,7 +442,6 @@ async function nextProblem() {
   const tehon = svg.cloneNode(true);
 
   removeSvgTagAttributes(svg);
-  shape2path(svg, createPath, { circleAlgorithm: "QuadBezier" });
   removeUseTags(svg);
   uniqIds(svg);
 
@@ -454,7 +451,7 @@ async function nextProblem() {
 
   resetTransforms(svg);
   problem = [];
-  [...svg.querySelectorAll("path, text")].forEach((path) => {
+  [...svg.querySelectorAll(pieceSelector)].forEach((path) => {
     problem.push({ path });
   });
   initPieces(svg);
@@ -512,6 +509,7 @@ async function scoring(svg) {
 
 const svgNamespace = "http://www.w3.org/2000/svg";
 const xlinkNamespace = "http://www.w3.org/1999/xlink";
+const pieceSelector = "rect, circle, ellipse, line, polyline, polygon, path, text";
 const drag = {
   id: null,
   target: null,
