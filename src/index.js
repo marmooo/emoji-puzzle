@@ -362,7 +362,7 @@ function shufflePieces(svg) {
     const prevMatrix = new DOMMatrix(prevArray);
     const tx = (svgX - pathX) * scale;
     const ty = (svgY - pathY) * scale;
-    const moveMatrix = new DOMMatrix([scale, 0, 0, scale, tx, ty]);
+    const moveMatrix = new DOMMatrix([1, 0, 0, 1, tx, ty]);
     path.style.transform = prevMatrix.multiply(moveMatrix).toString();
     path.style.cursor = "grab";
     path.dataset.draggable = true;
