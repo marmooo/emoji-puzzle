@@ -58,14 +58,6 @@ function changeLang() {
   location.href = `/emoji-puzzle/${lang}/`;
 }
 
-function createPath(node) {
-  const path = document.createElementNS(svgNamespace, "path");
-  for (const attribute of node.attributes) {
-    path.setAttribute(attribute.name, attribute.value);
-  }
-  return path;
-}
-
 function generateRandomString(length) {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -509,7 +501,8 @@ async function scoring(svg) {
 
 const svgNamespace = "http://www.w3.org/2000/svg";
 const xlinkNamespace = "http://www.w3.org/1999/xlink";
-const pieceSelector = "rect, circle, ellipse, line, polyline, polygon, path, text";
+const pieceSelector =
+  "rect, circle, ellipse, line, polyline, polygon, path, text";
 const drag = {
   id: null,
   target: null,
