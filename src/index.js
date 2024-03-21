@@ -459,10 +459,6 @@ async function nextProblem() {
   targets[1].replaceChildren(svg);
 
   resetTransforms(svg);
-  problem = [];
-  [...svg.querySelectorAll(pieceSelector)].forEach((path) => {
-    problem.push({ path });
-  });
   initPieces(svg);
 
   tehon.style.width = "100%";
@@ -537,7 +533,6 @@ const motionRatio = 0.8;
 const areaRatio = 0.05;
 const htmlToImageOptions = { width: 256, height: 256 };
 let svg;
-let problem;
 let iconList = [];
 let tehonPixels;
 let maxScore = clearScore;
