@@ -1,7 +1,7 @@
 import { toPixelData } from "https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/+esm";
 
 const courseNode = document.getElementById("course");
-const audioContext = new AudioContext();
+const audioContext = new globalThis.AudioContext();
 const audioBufferCache = {};
 loadAudio("modified", "/emoji-puzzle/mp3/decision50.mp3");
 loadAudio("correctAll", "/emoji-puzzle/mp3/correct1.mp3");
