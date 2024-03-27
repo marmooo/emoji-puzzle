@@ -1,12 +1,16 @@
 import { basename } from "https://deno.land/std/path/mod.ts";
 import { expandGlobSync } from "https://deno.land/std/fs/mod.ts";
-import { ttf2svg } from "npm:@marmooo/ttf2svg@0.1.4";
+import { parse } from "npm:opentype.js@1.3.4";
+import { toSVG, filterGlyphs } from "npm:@marmooo/ttf2svg@0.1.5";
 
 function parseTTF(inFile, outDir, options = {}) {
   Deno.mkdirSync(outDir, { recursive: true });
-  const svgs = ttf2svg(inFile, undefined, options);
-  for (const { glyph, svg } of svgs) {
+  const uint8array = Deno.readFileSync(inFile);
+  const font = parse(uint8array.buffer);
+  const glyphs = filterGlyphs(font, options);
+  for (const glyph of glyphs) {
     if (!glyph.unicode) continue;
+    const svg = toSVG(font, glyph, options);
     if (!svg) continue;
     const { x1 } = glyph.getBoundingBox();
     const fileName = Number(glyph.unicode).toString(16);
@@ -30,7 +34,8 @@ function notoEmojiTwotone() {
 
 function androidEmoji() {
   console.log("Android Emoji");
-  parseTTF("vendor/AndroidEmoji.ttf", "svg/android-emoji");
+  const options = { glyphHeight: 2600, translateY: 2000 };
+  parseTTF("vendor/AndroidEmoji.ttf", "svg/android-emoji", options);
 }
 
 function fluentUIEmoji() {
