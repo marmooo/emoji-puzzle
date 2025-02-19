@@ -350,7 +350,7 @@ function pieceDownEvent(event, ratio) {
   if (!target) return;
   if (!target.dataset.draggable) return;
   target.style.cursor = "grabbing";
-  drag.id = event.identifier || Date.now();
+  drag.id = event.identifier ?? Date.now();
   drag.target = target;
   const transform = target.style.transform;
   const matrix = transform
