@@ -1,5 +1,8 @@
 import { toPixelData } from "https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/+esm";
 
+document.getElementById("gamePanel")
+  .appendChild(document.getElementById("gamePanelTemplate").content);
+
 const courseNode = document.getElementById("course");
 let audioContext;
 const audioBufferCache = {};
