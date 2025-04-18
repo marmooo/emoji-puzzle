@@ -1,6 +1,6 @@
-import { basename } from "https://deno.land/std/path/mod.ts";
-import { expandGlobSync } from "https://deno.land/std/fs/mod.ts";
-import { filterGlyphs, parse, toSVG } from "npm:@marmooo/ttf2svg@0.2.1";
+import { basename } from "@std/path";
+import { expandGlobSync } from "@std/fs";
+import { filterGlyphs, parse, toSVG } from "@marmooo/ttf2svg";
 
 function parseTTF(inFile, outDir, options = {}) {
   Deno.mkdirSync(outDir, { recursive: true });
