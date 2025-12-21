@@ -21,11 +21,7 @@
       gtag('config', 'G-F2179JXDYY');
     </script>
     <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-          navigator.serviceWorker.register('/emoji-puzzle/sw.js');
-        });
-      }
+      navigator.serviceWorker.register("/emoji-puzzle/sw.js");
     </script>
     <link rel="icon" type="image/png" href="/emoji-puzzle/favicon/favicon.png">
     <link rel="icon" type="image/svg+xml" href="/emoji-puzzle/favicon/favicon.svg">
